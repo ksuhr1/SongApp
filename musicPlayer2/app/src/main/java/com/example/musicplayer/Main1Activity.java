@@ -1,7 +1,9 @@
 package com.example.musicplayer;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,10 +26,11 @@ import android.widget.SimpleCursorAdapter;
 import com.example.musicplayer.adapters.SongsRecyclerAdapter;
 import com.example.musicplayer.models.Song;
 import com.example.musicplayer.util.VerticalSpacingItemDecorator;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 //public class Main1Activity extends AppCompatActivity implements songDialog.songDialogListener
-public class Main1Activity extends AppCompatActivity implements SongsRecyclerAdapter.OnSongListener, songDialog.songDialogListener {
+public class Main1Activity extends AppCompatActivity implements SongsRecyclerAdapter.OnSongListener, songDialog.songDialogListener, View.OnClickListener {
 
     private Button titleButton;
     private Button removeAll;
@@ -47,6 +50,12 @@ public class Main1Activity extends AppCompatActivity implements SongsRecyclerAda
     //vars
     private ArrayList<Song> mSongs = new ArrayList<>();
 
+    @Override
+    public void onClick(View v) {
+        Intent intent = new Intent(this, SongActivity.class);
+        startActivity(intent);
+    }
+
     private SongsRecyclerAdapter mSongRecyclerAdapter;
 
     @Override
@@ -56,6 +65,8 @@ public class Main1Activity extends AppCompatActivity implements SongsRecyclerAda
         setContentView(R.layout.activity_songs_list);
 
         mRecyclerView = findViewById(R.id.recyclerView);
+
+        findViewById(R.id.fab).setOnClickListener(this);
 
         initRecyclerView();
         insertFakeSongs();
@@ -107,11 +118,28 @@ public class Main1Activity extends AppCompatActivity implements SongsRecyclerAda
 //        });
     }
 
-//    public void updateListView()
-//    {
-//
-//    }
+    private void deleteSong(Song song)
+    {
+        mSongs.remove(song);
+        mSongRecyclerAdapter.notifyDataSetChanged();
+    }
 
+
+    private ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT ) {
+
+        // used to rearrange list items
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+            deleteSong(mSongs.get(viewHolder.getAdapterPosition()));
+
+
+        }
+    };
 
     private void  insertFakeSongs()
     {
@@ -131,6 +159,7 @@ public class Main1Activity extends AppCompatActivity implements SongsRecyclerAda
         mRecyclerView.setLayoutManager(linearLayoutManager);
         VerticalSpacingItemDecorator itemDecorator = new VerticalSpacingItemDecorator(10);
         mRecyclerView.addItemDecoration(itemDecorator);
+        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(mRecyclerView); // connect  itemTouchHelper
         mSongRecyclerAdapter =  new SongsRecyclerAdapter(mSongs, this);
         mRecyclerView.setAdapter(mSongRecyclerAdapter);
     }
