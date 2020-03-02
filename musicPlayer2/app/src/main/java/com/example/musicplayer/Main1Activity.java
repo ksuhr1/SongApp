@@ -3,6 +3,7 @@ package com.example.musicplayer;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,10 +26,13 @@ import android.widget.SimpleCursorAdapter;
 
 import com.example.musicplayer.adapters.SongsRecyclerAdapter;
 import com.example.musicplayer.models.Song;
+import com.example.musicplayer.persistence.SongRepository;
 import com.example.musicplayer.util.VerticalSpacingItemDecorator;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.List;
+
 //public class Main1Activity extends AppCompatActivity implements songDialog.songDialogListener
 public class Main1Activity extends AppCompatActivity implements SongsRecyclerAdapter.OnSongListener, songDialog.songDialogListener, View.OnClickListener {
 
@@ -45,6 +49,9 @@ public class Main1Activity extends AppCompatActivity implements SongsRecyclerAda
 
     // UI components
     private RecyclerView mRecyclerView;
+
+    // repository
+    private SongRepository mSongRepository;
 
 
     //vars
@@ -66,10 +73,13 @@ public class Main1Activity extends AppCompatActivity implements SongsRecyclerAda
 
         mRecyclerView = findViewById(R.id.recyclerView);
 
+        mSongRepository = new SongRepository(this);
+
         findViewById(R.id.fab).setOnClickListener(this);
 
         initRecyclerView();
-        insertFakeSongs();
+        retrieveSongs();
+//        insertFakeSongs();
 
         setSupportActionBar((Toolbar)findViewById(R.id.songs_toolbar));
         setTitle("Song list");
@@ -116,6 +126,27 @@ public class Main1Activity extends AppCompatActivity implements SongsRecyclerAda
 //                openDialog();
 //            }
 //        });
+    }
+
+    // use observer to view changes to live data  object
+    // like attaching a listener to the database
+    // attaching observer to livedata object
+    // if anything changed in databse, observe will cause onChanged method and
+    // will rerquery notes
+    private void retrieveSongs(){
+        mSongRepository.retrieveSongsTask().observe(this, new Observer<List<Song>>() {
+            @Override
+            public void onChanged(List<Song> songs) {
+                if(mSongs.size() > 0){
+                    mSongs.clear();
+                }
+                if(songs != null)
+                {
+                    mSongs.addAll(songs);
+                }
+                mSongRecyclerAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     private void deleteSong(Song song)

@@ -18,7 +18,7 @@ public class SongRepository {
 
     public void insertSongTask(Song song)
     {
-        
+
     }
 
     public void updateSong(Song song)
@@ -28,7 +28,7 @@ public class SongRepository {
 
     public LiveData<List<Song>>retrieveSongsTask()
     {
-        return null;
+        return mSongDatabase.getSongDAO().getSongs();
     }
 
     public void deleteSong(Song song)

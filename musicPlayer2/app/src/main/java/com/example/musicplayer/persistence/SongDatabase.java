@@ -27,4 +27,5 @@ public abstract class SongDatabase extends RoomDatabase {
         return instance;
     }
 
+    public abstract SongDAO getSongDAO();
 }
