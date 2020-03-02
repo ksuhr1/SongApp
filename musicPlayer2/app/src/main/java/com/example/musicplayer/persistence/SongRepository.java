@@ -4,6 +4,7 @@ import android.content.Context;
 
 import androidx.lifecycle.LiveData;
 
+import com.example.musicplayer.async.DeleteAsyncTask;
 import com.example.musicplayer.async.InsertAsyncTask;
 import com.example.musicplayer.models.Song;
 
@@ -34,6 +35,7 @@ public class SongRepository {
 
     public void deleteSong(Song song)
     {
+        new DeleteAsyncTask(mSongDatabase.getSongDAO()).execute(song);
 
     }
 

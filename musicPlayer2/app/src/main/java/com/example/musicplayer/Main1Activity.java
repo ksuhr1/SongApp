@@ -153,6 +153,8 @@ public class Main1Activity extends AppCompatActivity implements SongsRecyclerAda
     {
         mSongs.remove(song);
         mSongRecyclerAdapter.notifyDataSetChanged();
+        mSongRepository.deleteSong(song);
+
     }
 
 
