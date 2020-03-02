@@ -4,6 +4,7 @@ import android.content.Context;
 
 import androidx.lifecycle.LiveData;
 
+import com.example.musicplayer.async.InsertAsyncTask;
 import com.example.musicplayer.models.Song;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public class SongRepository {
 
     public void insertSongTask(Song song)
     {
-
+        new InsertAsyncTask(mSongDatabase.getSongDAO()).execute(song); //execute will start async task
     }
 
     public void updateSong(Song song)

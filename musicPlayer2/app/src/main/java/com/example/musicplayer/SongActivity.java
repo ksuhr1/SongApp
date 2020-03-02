@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -16,8 +18,16 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.musicplayer.models.Song;
+import com.example.musicplayer.persistence.SongRepository;
 
-public class SongActivity extends AppCompatActivity implements View.OnTouchListener, GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener, View.OnClickListener{
+public class SongActivity extends AppCompatActivity implements
+        View.OnTouchListener,
+        GestureDetector.OnGestureListener,
+        GestureDetector.OnDoubleTapListener,
+        View.OnClickListener,
+        TextWatcher
+{
+
 
     private static final String TAG = "SongActivity";
 
@@ -101,6 +111,10 @@ public class SongActivity extends AppCompatActivity implements View.OnTouchListe
     private static final int EDI_MODE_DISABLED=0;
     private int mMode; // keep  track of the  state
 
+    private SongRepository mSongRepository;
+
+    private Song mFinalSong;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,6 +127,7 @@ public class SongActivity extends AppCompatActivity implements View.OnTouchListe
         mBackArrowContainer = findViewById(R.id.back_arrow_container);
         mCheck = findViewById(R.id.toolbar_check);
         mBackArrow = findViewById(R.id.toolbar_back_arrow);
+        mSongRepository = new SongRepository(this);
 
         // this is a new song, (EDIT MODE)
         if(getIncomingIntent())
@@ -135,6 +150,7 @@ public class SongActivity extends AppCompatActivity implements View.OnTouchListe
         if(getIntent().hasExtra("selected_song"))
         {
             mInitialSong = getIntent().getParcelableExtra("selected_song");
+            mFinalSong= getIntent().getParcelableExtra("selected_song");
             mIsNewSong = false;
             mMode = EDI_MODE_DISABLED;
             return false;
@@ -142,6 +158,23 @@ public class SongActivity extends AppCompatActivity implements View.OnTouchListe
         mMode = EDIT_MODE_ENABLED;
         mIsNewSong = true;
         return  true;
+    }
+
+    private void saveChanges(){
+        if(mIsNewSong)
+        {
+            saveNewSong();
+        }
+        else
+        {
+
+        }
+    }
+
+    private void saveNewSong()
+    {
+        mSongRepository.insertSongTask(mFinalSong);
+
     }
 
     // want to  hide back arrow, show check mark
@@ -171,8 +204,23 @@ public class SongActivity extends AppCompatActivity implements View.OnTouchListe
         mMode  =   EDI_MODE_DISABLED;
 
         disableContentInteraction();
+        // Want to see if final song is different than initial song
+        String temp = mEditText.getText().toString();
+        temp = temp.replace("\n", "");
+        temp = temp.replace(" ", "");
+        if(temp.length() > 0)
+        {
+            mFinalSong.setTitle(mEditTitle.getText().toString());
+            mFinalSong.setContent(mEditText.getText().toString());
+            String timestamp = "Jan 2020";
+            mFinalSong.setTimestamp(timestamp);
 
+            if(!mFinalSong.getContent().equals(mInitialSong.getContent()) || !mFinalSong.getTitle().equals(mInitialSong.getTitle()))
+            {
+                saveChanges();
+            }
 
+        }
     }
 
     private void hideSoftKeyboard()
@@ -201,6 +249,11 @@ public class SongActivity extends AppCompatActivity implements View.OnTouchListe
         Log.d("SetNewwwwSongProperties", "song:");
         mViewTitle.setText("Song Title");
         mEditTitle.setText("Song Title");
+
+        mInitialSong = new Song();
+        mFinalSong = new Song();
+        mInitialSong.setTitle("Song Title");
+        mFinalSong.setTitle("Song Title");
     }
 
     private void setListeners()
@@ -210,6 +263,7 @@ public class SongActivity extends AppCompatActivity implements View.OnTouchListe
         mViewTitle.setOnClickListener(this);
         mCheck.setOnClickListener(this);
         mBackArrow.setOnClickListener(this);
+        mEditTitle.addTextChangedListener(this);
 
     }
     @Override
@@ -262,5 +316,23 @@ public class SongActivity extends AppCompatActivity implements View.OnTouchListe
     @Override
     public boolean onDoubleTapEvent(MotionEvent e) {
         return false;
+    }
+
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+        mViewTitle.setText(s.toString());
+
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+
     }
 }
