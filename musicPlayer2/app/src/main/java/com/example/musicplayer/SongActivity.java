@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.example.musicplayer.models.Song;
 import com.example.musicplayer.persistence.SongRepository;
+import com.example.musicplayer.util.Utility;
 
 public class SongActivity extends AppCompatActivity implements
         View.OnTouchListener,
@@ -212,7 +213,7 @@ public class SongActivity extends AppCompatActivity implements
         {
             mFinalSong.setTitle(mEditTitle.getText().toString());
             mFinalSong.setContent(mEditText.getText().toString());
-            String timestamp = "Jan 2020";
+            String timestamp = Utility.getCurrentTimestamp();
             mFinalSong.setTimestamp(timestamp);
 
             if(!mFinalSong.getContent().equals(mInitialSong.getContent()) || !mFinalSong.getTitle().equals(mInitialSong.getTitle()))

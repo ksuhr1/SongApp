@@ -1,5 +1,6 @@
 package com.example.musicplayer.adapters;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.musicplayer.R;
 import com.example.musicplayer.models.Song;
+import com.example.musicplayer.util.Utility;
 
 import java.util.ArrayList;
 
@@ -17,6 +19,8 @@ import java.util.ArrayList;
 //  only shows small amounts of view at a given time
 //  as you scroll it recycles the views
 public class SongsRecyclerAdapter extends RecyclerView.Adapter<SongsRecyclerAdapter.ViewHolder> {
+
+    private static final String TAG = "SongsRecyclerAdapter";
 
     private ArrayList<Song> mSongs =  new ArrayList<>();
     private OnSongListener mOnSongListener;
@@ -39,9 +43,19 @@ public class SongsRecyclerAdapter extends RecyclerView.Adapter<SongsRecyclerAdap
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         //get entry in mSongs list
-        holder.timestamp.setText(mSongs.get(position).getTimestamp());
-        holder.title.setText(mSongs.get(position).getTitle());
 
+        try{
+            String month = mSongs.get(position).getTimestamp().substring(0, 2);
+            month = Utility.getMonthFromNumber(month);
+            String year = mSongs.get(position).getTimestamp().substring(3);
+            String timestamp = month + " " +  year;
+            holder.timestamp.setText(timestamp);
+            holder.title.setText(mSongs.get(position).getTitle());
+
+
+        }catch(NullPointerException e){
+            Log.e(TAG, "onBindViewHolder: NullPointerException"+ e.getMessage());
+        }
     }
 
     @Override
