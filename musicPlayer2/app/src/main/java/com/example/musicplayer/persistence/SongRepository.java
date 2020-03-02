@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData;
 
 import com.example.musicplayer.async.DeleteAsyncTask;
 import com.example.musicplayer.async.InsertAsyncTask;
+import com.example.musicplayer.async.UpdateAsyncTask;
 import com.example.musicplayer.models.Song;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public class SongRepository {
 
     public void updateSong(Song song)
     {
-
+        new UpdateAsyncTask(mSongDatabase.getSongDAO()).execute(song);
     }
 
     public LiveData<List<Song>>retrieveSongsTask()

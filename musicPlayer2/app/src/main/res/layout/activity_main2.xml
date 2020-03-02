@@ -15,15 +15,6 @@ android:orientation="vertical">
     android:textSize="26sp"
     android:textStyle="normal"/>
 
-<Button
-    android:id="@+id/button2"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_below="@id/textOutput"
-    android:layout_centerHorizontal="true"
-    android:layout_marginTop="125dp"
-    android:text="open activity 3" />
-
     <ImageView
     android:id="@+id/speakButton"
     android:layout_width="100dp"

@@ -22,7 +22,6 @@ public class Main2Activity extends AppCompatActivity {
 
     private TextView textOutput;
 
-    private Button button2;
 
 
     @Override
@@ -30,23 +29,8 @@ public class Main2Activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
         textOutput = (TextView) findViewById(R.id.textOutput);
-
-        button2 = (Button) findViewById(R.id.button2);
-        button2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openActivity3();
-            }
-        });
-        //mySong contains mp3
-        //mySong=MediaPlayer.create(MainActivity.this, R.raw.dance1);
     }
 
-    // this will open next activity
-    public void openActivity3() {
-        Intent intent = new Intent(this, Main3Activity.class);
-        startActivity(intent);
-    }
 
     public void getSpeech(View view)
     {
@@ -82,14 +66,4 @@ public class Main2Activity extends AppCompatActivity {
                 break;
         }
     }
-
-    //    public void playGenre(View view) {
-//        mySong.start();
-//    }
-//
-////    @Override
-//    protected void onPause() {
-//        super.onPause();
-//        mySong.release();
-//    }
 }
