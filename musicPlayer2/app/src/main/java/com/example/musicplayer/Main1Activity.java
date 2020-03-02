@@ -1,6 +1,9 @@
 package com.example.musicplayer;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -12,16 +15,19 @@ import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.SimpleCursorAdapter;
 
+import com.example.musicplayer.adapters.SongsRecyclerAdapter;
 import com.example.musicplayer.models.Song;
+import com.example.musicplayer.util.VerticalSpacingItemDecorator;
 
 import java.util.ArrayList;
-
-public class Main1Activity extends AppCompatActivity implements songDialog.songDialogListener {
+//public class Main1Activity extends AppCompatActivity implements songDialog.songDialogListener
+public class Main1Activity extends AppCompatActivity implements SongsRecyclerAdapter.OnSongListener, songDialog.songDialogListener {
 
     private Button titleButton;
     private Button removeAll;
@@ -32,13 +38,33 @@ public class Main1Activity extends AppCompatActivity implements songDialog.songD
     public ListView listView;
 
     private static final String TAG =  "Main1Activity";
+
+
+    // UI components
+    private RecyclerView mRecyclerView;
+
+
+    //vars
+    private ArrayList<Song> mSongs = new ArrayList<>();
+
+    private SongsRecyclerAdapter mSongRecyclerAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main1);
+//        setContentView(R.layout.activity_main1);
+        setContentView(R.layout.activity_songs_list);
 
-        //empty constructor
-        Song song = new Song("hi", "lalala", "timestamp ");
+        mRecyclerView = findViewById(R.id.recyclerView);
+
+        initRecyclerView();
+        insertFakeSongs();
+
+        setSupportActionBar((Toolbar)findViewById(R.id.songs_toolbar));
+        setTitle("Song list");
+
+//        //empty constructor
+//        Song song = new Song("hi", "lalala", "timestamp ");
 
 //        listView = (ListView) findViewById(R.id.songList);
 //        myDB =  new DatabaseHelper(this);
@@ -86,13 +112,35 @@ public class Main1Activity extends AppCompatActivity implements songDialog.songD
 //
 //    }
 
+
+    private void  insertFakeSongs()
+    {
+        for(int i  = 0; i <  1000; i++)
+        {
+            Song song = new  Song();
+            song.setTitle("title # " + i);
+            song.setContent("content # " + i);
+            song.setTimestamp("Jan 2020");
+            mSongs.add(song);
+        }
+        mSongRecyclerAdapter.notifyDataSetChanged();
+    }
+
+    private void initRecyclerView(){
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(linearLayoutManager);
+        VerticalSpacingItemDecorator itemDecorator = new VerticalSpacingItemDecorator(10);
+        mRecyclerView.addItemDecoration(itemDecorator);
+        mSongRecyclerAdapter =  new SongsRecyclerAdapter(mSongs, this);
+        mRecyclerView.setAdapter(mSongRecyclerAdapter);
+    }
+
     public void  openDialog()
     {
         songDialog songDialog = new songDialog();
         songDialog.show(getSupportFragmentManager(),"song dialog");
     }
 
-    @Override
     public void applyText(String song) {
         Log.d("applyText", "song is "+ song);
         if(song.length() != 0)
@@ -139,5 +187,19 @@ public class Main1Activity extends AppCompatActivity implements songDialog.songD
         {
             Toast.makeText(Main1Activity.this, "Something went wrong!", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public void onSongClick(int position) {
+        Log.d("onSongClick", "onSongClick: clicked"  + position);
+        // if  you want to pass selected item to new activity attach to bundle
+//        intent.putExtra("some object", mSongs.get(position));
+//        mSongs.get(position);
+        Intent intent  = new Intent(this,  SongActivity.class);
+        intent.putExtra("selected_song",  mSongs.get(position));
+        startActivity(intent);
+
+        // custom classesm ust  be made parcelable  to be attached  to  bundles
+        // should not attach very large dataseets to bundles.  no more than 50 entries
     }
 }
